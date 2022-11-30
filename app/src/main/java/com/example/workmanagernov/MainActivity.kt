@@ -15,14 +15,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.workDataOf
+import androidx.work.*
+import com.example.workmanagernov.WorkManager.FibWorker
 import com.example.workmanagernov.WorkManager.UploadWorker
 import com.example.workmanagernov.ui.theme.WorkManagerNovTheme
 import com.example.workmanagernov.util.Constants
@@ -44,7 +44,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ShowScreen() {
+fun ShowScreen(
+    viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
+    viewModel.workInfoData.observeAsState().value
     val context = LocalContext.current
     var selectImage by remember { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(contract =
@@ -71,11 +74,7 @@ fun ShowScreen() {
                     selectImage?.let {
                         Button(
                             onClick = {
-                                val imageData = workDataOf(Constants.KEY_IMAGE_URI to selectImage.toString())
-                                val uploadWorkRequest = OneTimeWorkRequestBuilder<UploadWorker>()
-                                    .setInputData(imageData)
-                                    .build()
-                                WorkManager.getInstance(context).enqueue(uploadWorkRequest)
+                                viewModel.startWorkManager(context, selectImage)
                             },
                         ) {
                             Text(text = "Upload A Photo")

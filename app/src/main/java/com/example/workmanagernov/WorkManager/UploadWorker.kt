@@ -8,9 +8,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
-import androidx.work.workDataOf
+import androidx.work.*
 import com.example.workmanagernov.MainActivity
 import com.example.workmanagernov.R
 import com.example.workmanagernov.data.remote.ImgurApiService
@@ -72,7 +70,6 @@ class UploadWorker(
                     val notificationManager2 =
                         applicationContext.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
                     notificationManager2.notify(0, builder)
-
                     Result.success(outputData)
                 }
             }
